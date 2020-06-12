@@ -290,12 +290,12 @@ async def start_parser():
 
 
                     base = func.get_link(link)
-                    print('записей в базе '+str(len(base)))
+                    print('записей в базе ')
                     if base != None:
                         b_items = func.soup_parsing(base)
                         if b_items != None:
                             if len(b_items) > 0:
-                                print('записей в b_items ' + str(len(b_items)))
+                                print('записей в b_items ')
                                 for m in b_items:
                                     try:
 
