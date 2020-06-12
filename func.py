@@ -89,10 +89,11 @@ def str_to_date(t):
 
 def get_link(link):
     try:
-        print('get_html')
+
         get_html=requests.get(link)
         soup=bs(get_html.text,'html.parser')
         print('soup_get')
+        print(soup.text)
         base = soup.findAll('div', class_='snippet-horizontal')
         if len(base)>0:
             return base
