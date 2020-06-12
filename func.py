@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup as bs
 from datetime import date, timedelta
 import datetime as DT
 import requests
+from fake_useragent import UserAgent
 
 FIRST_PAGES_ID="1980-10-01 10:10:10"
 
@@ -89,10 +90,11 @@ def str_to_date(t):
 
 def get_link(link):
     try:
-
-        get_html=requests.get(link)
+        ua = UserAgent()
+        agent=print(ua.random)
+        headers = {'User-Agent': agent}
+        get_html=requests.get(link,headers=headers)
         soup=bs(get_html.text,'html.parser')
-        print('soup_get')
         print(soup.text)
         base = soup.findAll('div', class_='snippet-horizontal')
         if len(base)>0:
