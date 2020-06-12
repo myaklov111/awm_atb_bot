@@ -353,8 +353,10 @@ async def start_parser():
                                         continue
 
                         else:
-                            print('no new obv')
 
+                            print('no new obv')
+                    else:
+                        print('empty base')
 
                 except:
                     print('error p')
