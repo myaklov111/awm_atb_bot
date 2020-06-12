@@ -3,7 +3,7 @@ from aiogram.dispatcher.filters import Command,Text
 from aiogram.types import Message,ReplyKeyboardRemove
 import aiohttp
 import keyboards
-from status import TEST,TEST2
+from status import TEST
 import config
 from aiogram.dispatcher import FSMContext
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -18,12 +18,14 @@ import asyncio
 PROXY_URL ='http://104.227.97.168:8000'
 
 
-PROXY_AUTH = aiohttp.BasicAuth(login='qY5bWs', password='kjMHoV')
+#PROXY_AUTH = aiohttp.BasicAuth(login='qY5bWs', password='kjMHoV')
 
 FIRST_POST={'title':'','url':'','price':'','img':''}
 
 storage = MemoryStorage()
-bot = Bot(token=config.API_TOKEN, proxy=PROXY_URL, proxy_auth=PROXY_AUTH)
+#bot = Bot(token=config.API_TOKEN, proxy=PROXY_URL, proxy_auth=PROXY_AUTH)
+
+bot = Bot(token=config.API_TOKEN)
 
 dp = Dispatcher(bot,storage=storage)
 
