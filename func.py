@@ -10,6 +10,8 @@ FIRST_POST={'title':'','url':'','price':'','img':''}
 
 DATE_DICT={'января':'01','февраля':'02','марта':'03','апреля':'04','мая':'05','июня':'06','июля':'07','августа':'08','сентября':'09','октября':'10','ноября':'11','декабря':'12'}
 
+proxies = {'https':'https://qY5bWs:kjMHoV@104.227.97.168:8000','https':'https://U9E5Vn:pWqpP8@45.86.14.98:8000'}
+
 
 def soup_parsing(base):
     base_id_items = set()
@@ -90,10 +92,11 @@ def str_to_date(t):
 
 def get_link(link):
     try:
+        global proxies
         ua = UserAgent()
         agent=print(ua.random)
         headers = {'User-Agent': agent}
-        get_html=requests.get(link,headers=headers)
+        get_html=requests.get(link,headers=headers,proxies=proxies)
         soup=bs(get_html.text,'html.parser')
         print(soup.text)
         base = soup.findAll('div', class_='snippet-horizontal')
