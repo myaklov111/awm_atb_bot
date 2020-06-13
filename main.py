@@ -340,13 +340,13 @@ async def start_parser():
                                         img=cap['img']
                                         post=cap['post']
 
-                                        print('send '+img)
+
                                         await bot.send_photo(chat_id,img,post,parse_mode='HTML')
-                                        print('sent post')
+
                                         if pflag==False:
                                             if sql.update_last_pars(chat_id,new_date):
                                                 pflag=True
-                                                print('write last_pars')
+
 
                                     except:
                                         print('error post')
