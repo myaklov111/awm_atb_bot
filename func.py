@@ -3,6 +3,7 @@ from datetime import date, timedelta
 import datetime as DT
 import requests
 from fake_useragent import UserAgent
+import config
 
 FIRST_PAGES_ID="1980-10-01 10:10:10"
 
@@ -13,9 +14,24 @@ DATE_DICT={'января':'01','февраля':'02','марта':'03','апре
 proxy='socks5://aWdrxQ:YGppgp@108.187.204.26:8000'
 
 
-def soup_parsing(base):
-    base_id_items = set()
+def replace_link(link:str):
+    st=link
+    if link.startswith('https://m.avito.ru'):
+        st=link.replace('https://m.avito.ru','https://www.avito.ru')
+    elif link.startswith('http://m.avito.ru'):
+        st=link.replace('http://m.avito.ru','https://www.avito.ru')
+    elif link.startswith('m.avito.ru'):
+        st=link.replace('m.avito.ru','https://www.avito.ru')
+    elif link.startswith('www.avito.ru'):
+        st=link.replace('www.avito.ru','https://www.avito.ru')
+    return st
+
+
+def soup_parsing(base,base_id_items:set):
+
     base_items = []
+    base_list = list(base_id_items)
+    base_last=set()
     for b in base:
         item = {}
         try:
@@ -39,16 +55,21 @@ def soup_parsing(base):
             item['price'] = g_price
             item['time'] = g_time
 
+
             if g_item_id not in base_id_items:
-                base_id_items.add(g_item_id)
+                base_list.append(g_item_id)
                 base_items.append(item)
             else:
                 print(f'id {g_item_id} в базе уже есть')
         except:
             continue
     if len(base_items)>0:
-
-        return base_items
+        if len(base_list)>config.LIMIT_LAST_BASE_COUNT:
+            base_list.sort(reverse=True)
+            while len(base_list)>config.LIMIT_LAST_BASE_COUNT:
+                del (base_list[-1])
+        base_last=set(base_list)
+        return [base_items,base_last]
     else:
         return None
 
@@ -122,20 +143,24 @@ def check_link_update(link):
     global FIRST_PAGES_ID
     global FIRST_POST
 
+
     FIRST_PAGES_ID = "1900-10-01 10:10:10"
 
     dt_fmt = '%Y-%m-%d %H:%M'
     f_date = DT.datetime.strptime(FIRST_PAGES_ID,dt_fmt)
+    base_id_items = set()
+
+    st=replace_link(link)
+    print(st)
 
     s='https://www.avito.ru'
-    s2 = 'https://m.avito.ru'
-    if link.startswith(s):
+    if st.startswith(s):
         try:
-
+            link=st
 
             base = get_link(link)
             if base != None:
-                b_items = soup_parsing(base)
+                b_items = soup_parsing(base,base_id_items)[0]
                 if b_items != None:
                     if len(b_items) >0:
                         for m in b_items:
@@ -173,14 +198,20 @@ def check_link(link):
     dt_fmt = '%Y-%m-%d %H:%M:%S'
     f_date = DT.datetime.strptime(FIRST_PAGES_ID,dt_fmt).timestamp()
 
-    s='https://www.avito.ru'
+    base_id_items = set()
+
+    st = replace_link(link)
+    print(st)
+
+    s = 'https://www.avito.ru'
+
     if link.startswith(s):
         try:
-
+            link = st
 
             base = get_link(link)
             if base != None:
-                b_items = soup_parsing(base)
+                b_items = soup_parsing(base,base_id_items)[0]
                 if b_items != None:
                     if len(b_items) >0:
                         for m in b_items:

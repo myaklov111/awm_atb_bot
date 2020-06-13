@@ -25,11 +25,13 @@ def unit_db(force: bool = False):
         CREATE TABLE IF NOT EXISTS users (
         id             INTEGER PRIMARY KEY,
         user_id            INTEGER NOT NULL UNIQUE ,
-        link               TEXT NOT NULL,
+        link               VARCHAR (255) NOT NULL,
         start_time         INTEGER NOT NULL,
         end_time           INTEGER NOT NULL,
         last_pars          TIMESTAMP,
-        vk                 INTEGER NOT NULL
+        vk                 INTEGER NOT NULL,
+        last_base          text,
+        sub                TIMESTAMP
        )
         ''')
         conn.commit()
@@ -64,7 +66,7 @@ def update_user_link(user_id,link,tstap):
     try:
         conn = get_connection()
         c = conn.cursor()
-        c.execute(f"UPDATE users SET link='{link}', last_pars={tstap} WHERE user_id={user_id}")
+        c.execute(f"UPDATE users SET link='{link}', last_pars={tstap},last_base='' WHERE user_id={user_id}")
         conn.commit()
         return True
 
@@ -75,7 +77,7 @@ def set_user_link(user_id,link):
     try:
         conn = get_connection()
         c = conn.cursor()
-        c.execute('UPDATE users SET link=(?),start_time=0,end_time=24,last_pars=1000, vk=0 WHERE user_id=(?)',(link,user_id))
+        c.execute('UPDATE users SET link=(?),start_time=0,end_time=24,last_pars=1000, vk=0,last_base="" WHERE user_id=(?)',(link,user_id))
         conn.commit()
         return True
 
@@ -115,11 +117,11 @@ def update_vk(user_id,vk=0):
     except:
         return False
 
-def update_last_pars(user_id,last_pars=0):
+def update_last_pars(user_id,last_pars=0,last_base=""):
     try:
         conn = get_connection()
         c = conn.cursor()
-        c.execute(f'UPDATE users SET last_pars={last_pars}  WHERE user_id={user_id}')
+        c.execute(f"UPDATE users SET last_pars={last_pars},last_base='{last_base}'  WHERE user_id={user_id}")
         conn.commit()
         return True
 

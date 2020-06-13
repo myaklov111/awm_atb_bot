@@ -272,6 +272,8 @@ async def send_welcome_text(message: types.Message):
 
 async def start_parser():
     global FIRST_POST
+    base_last=set()
+
     posts=[]
     new_date=0
     x=0
@@ -288,11 +290,15 @@ async def start_parser():
                     chat_id=mas[1]
                     new_date=0
 
+                    base_last = str(mas[7]).split(',')
+
 
                     base = func.get_link(link)
                     print('записей в базе ')
                     if base != None:
-                        b_items = func.soup_parsing(base)
+                        bb=func.soup_parsing(base,base_id_items=base_last)
+                        b_items = bb[0]
+                        ss_last=','.join(bb[1])
                         if b_items != None:
                             if len(b_items) > 0:
                                 print('записей в b_items ')
@@ -330,27 +336,31 @@ async def start_parser():
 
                                 pflag=False
 
-                                print('переходим к постингу')
-                                print(posts)
-                                for cap in posts:
+                                if len(posts)>0:
+                                    print('переходим к постингу')
 
-                                    try:
-                                        time.sleep(1)
-                                        chat_id=cap['chat_id']
-                                        img=cap['img']
-                                        post=cap['post']
+                                    for cap in posts:
 
-
-                                        await bot.send_photo(chat_id,img,post,parse_mode='HTML')
-
-                                        if pflag==False:
-                                            if sql.update_last_pars(chat_id,new_date):
-                                                pflag=True
+                                        try:
+                                            time.sleep(1)
+                                            chat_id=cap['chat_id']
+                                            img=cap['img']
+                                            post=cap['post']
 
 
-                                    except:
-                                        print('error post')
-                                        continue
+                                            await bot.send_photo(chat_id,img,post,parse_mode='HTML')
+
+                                            if pflag==False:
+                                                if sql.update_last_pars(chat_id,new_date,ss_last):
+                                                    pflag=True
+
+
+                                        except:
+                                            print('error post')
+                                            continue
+                                    print('выполнен постинг')
+                                else:
+                                    print('нет постов для постинга')
 
                         else:
 

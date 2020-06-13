@@ -44,7 +44,7 @@ settings_menu=ReplyKeyboardMarkup(
 
          ],
         [
-            KeyboardButton(text='Настройка времени')
+            KeyboardButton(text='Установить время')
         ],
         [
             KeyboardButton(text='Назад')
