@@ -10,7 +10,7 @@ FIRST_POST={'title':'','url':'','price':'','img':''}
 
 DATE_DICT={'января':'01','февраля':'02','марта':'03','апреля':'04','мая':'05','июня':'06','июля':'07','августа':'08','сентября':'09','октября':'10','ноября':'11','декабря':'12'}
 
-proxies = {'https':'https://qY5bWs:kjMHoV@104.227.97.168:8000','https':'https://U9E5Vn:pWqpP8@45.86.14.98:8000'}
+proxy='socks5://aWdrxQ:YGppgp@108.187.204.26:8000'
 
 
 def soup_parsing(base):
@@ -92,13 +92,22 @@ def str_to_date(t):
 
 def get_link(link):
     try:
-        global proxies
+        global proxy
         ua = UserAgent()
-        agent=print(ua.random)
-        headers = {'User-Agent': agent}
-        get_html=requests.get(link,headers=headers,proxies=proxies)
+        agent = ua.random
+        headers = {
+            'User-Agent': agent,
+            'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
+            'Upgrade-Insecure-Requests': '1',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Connection': 'keep-alive'
+        }
+
+        get_html= requests.get(link,
+                            proxies=dict(http=proxy,
+                                         https=proxy),headers=headers)
+
         soup=bs(get_html.text,'html.parser')
-        print(soup.text)
         base = soup.findAll('div', class_='snippet-horizontal')
         if len(base)>0:
             return base
