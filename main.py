@@ -17,6 +17,8 @@ import asyncio
 
 PROXY_URL ='http://104.227.97.168:8000'
 
+STOP=True
+
 
 PROXY_AUTH = aiohttp.BasicAuth(login='qY5bWs', password='kjMHoV')
 
@@ -43,6 +45,7 @@ async def replace_link(link:str):
 
 
 async def write_link(message: types.Message,state:FSMContext):
+    global STOP
     if message.text == 'Назад':
         await state.finish()
         await message.reply(config.WELCOM_TEXT, reply_markup=keyboards.main_menu)
@@ -60,6 +63,7 @@ async def write_link(message: types.Message,state:FSMContext):
                 if sql.select_users_check_user_time(message.chat.id):
                     if sql.update_user_link(message.chat.id,link,tstap):
                         flag=True
+                        STOP=True
 
                 else:
                     if sql.add_users_user(message.chat.id,link,0,24,tstap):
@@ -204,6 +208,8 @@ async def send_conntrol_menu(message: types.Message):
 
 @dp.message_handler(Text(equals=["Старт"]))
 async def start_monitor(message: types.Message):
+    global STOP
+    STOP=False
     try:
         res=sql.select_users_user_all(message.chat.id)
         if res!=None:
@@ -226,6 +232,8 @@ async def start_monitor(message: types.Message):
 
 @dp.message_handler(Text(equals=["Стоп"]))
 async def stop_monitor(message: types.Message):
+    global STOP
+    STOP=True
     try:
         res = sql.select_users_user_all(message.chat.id)
         if res != None:
@@ -249,6 +257,8 @@ async def stop_monitor(message: types.Message):
 
 @dp.message_handler(Command("start"),state=None)
 async def send_welcome_text(message: types.Message):
+    global STOP
+    STOP = False
     try:
         res=sql.select_users_user_all(message.chat.id)
         print(res)
@@ -272,6 +282,7 @@ async def send_welcome_text(message: types.Message):
 
 async def start_parser():
     global FIRST_POST
+    global STOP
     base_last=set()
 
     posts=[]
@@ -340,25 +351,25 @@ async def start_parser():
                                     print('переходим к постингу')
 
                                     for cap in posts:
-
-                                        try:
-                                            time.sleep(1)
-                                            chat_id=cap['chat_id']
-                                            img=cap['img']
-                                            post=cap['post']
-
-
-                                            await bot.send_photo(chat_id,img,post,parse_mode='HTML')
-
-                                            if pflag==False:
-                                                if sql.update_last_pars(chat_id,new_date,ss_last):
-                                                    pflag=True
+                                        if STOP==False:
+                                            try:
+                                                time.sleep(1)
+                                                chat_id=cap['chat_id']
+                                                img=cap['img']
+                                                post=cap['post']
 
 
-                                        except:
-                                            print('error post')
-                                            continue
-                                    print('выполнен постинг')
+                                                await bot.send_photo(chat_id,img,post,parse_mode='HTML')
+
+                                                if pflag==False:
+                                                    if sql.update_last_pars(chat_id,new_date,ss_last):
+                                                        pflag=True
+
+
+                                            except:
+                                                print('error post')
+                                                continue
+                                        print('выполнен постинг')
                                 else:
                                     print('нет постов для постинга')
 
